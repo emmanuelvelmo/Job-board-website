@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos - Setsuzoku</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .barra-superior {
+            background-color: #2c3e50;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .enlaces-sesion {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .enlace-sesion {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .enlace-sesion:hover {
+            text-decoration: underline;
+        }
+
+        .contenedor-principal {
+            display: flex;
+            flex: 1;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .barra-lateral {
+            width: 250px;
+            background-color: #34495e;
+            color: white;
+            height: calc(100vh - 60px);
+            position: fixed;
+            top: 60px;
+            left: 0;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .menu-usuario {
+            padding: 20px;
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        .nombre-usuario {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .rol-usuario {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .menu-opciones {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu-opciones li {
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        .menu-opciones a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .menu-opciones a:hover {
+            background-color: #2c3e50;
+        }
+
+        .menu-opciones a.disabled {
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .menu-opciones a.disabled:hover {
+            background-color: transparent;
+        }
+
+        .contenedor-contenido {
+            flex: 1;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .contenedor-contenido.con-barra-lateral {
+            margin-left: 250px; /* Ancho de la barra lateral */
+        }
+
+        .contenido-cursos {
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .titulo-cursos {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .filtros-cursos {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filtro {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .etiqueta-filtro {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .campo-filtro {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .campo-filtro:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .lista-cursos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .curso {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .curso:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .imagen-curso {
+            height: 180px;
+            background-color: #ddd;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .informacion-curso {
+            padding: 20px;
+        }
+
+        .titulo-curso {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .descripcion-curso {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .detalles-curso {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .instructor-curso {
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        .precio-curso {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+
+        .boton-inscribirse {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .boton-inscribirse:hover {
+            background-color: #2980b9;
+        }
+
+        .boton-inscribirse:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .mensaje-carga {
+            text-align: center;
+            padding: 50px 20px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+
+        .mensaje-error {
+            text-align: center;
+            padding: 50px 20px;
+            color: #e74c3c;
+            font-size: 1.1rem;
+        }
+
+        .boton-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        @media (max-width: 768px) {
+            .lista-cursos {
+                grid-template-columns: 1fr;
+            }
+            
+            .contenedor-contenido.con-barra-lateral {
+                margin-left: 0;
+            }
+            
+            .barra-lateral {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+            
+            .boton-menu {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- BARRA SUPERIOR -->
+    <nav class="barra-superior">
+        <a href="index.html" class="logo">Setsuzoku</a>
+        <div class="enlaces-sesion" id="enlaces-sesion">
+            <a href="inicio_sesion.html" class="enlace-sesion" id="enlace-inicio-sesion">Iniciar sesión</a>
+            <a href="registro.html" class="enlace-sesion" id="enlace-registro">Registrarse</a>
+        </div>
+    </nav>
+
+    <div class="contenedor-principal">
+        <!-- BARRA LATERAL -->
+        <button class="boton-menu" id="boton-menu">☰ Menú</button>
+        
+        <div class="barra-lateral" id="barra-lateral">
+            <div class="menu-usuario">
+                <div class="nombre-usuario" id="nombre-usuario">Usuario</div>
+                <div class="rol-usuario" id="rol-usuario">Rol</div>
+            </div>
+
+            <ul class="menu-opciones">
+                <li><a href="perfil.html">Perfil</a></li>
+                <li><a href="index.html">Menú principal</a></li>
+                <li><a href="postulaciones.html" id="enlace-postulaciones">Tus postulaciones</a></li>
+                <li><a href="cursos_usuario.html" id="enlace-cursos-usuario">Tus cursos</a></li>
+                <li><a href="trabajos.html" id="enlace-trabajos">Trabajos</a></li>
+                <li><a href="cursos.html" id="enlace-cursos">Cursos</a></li>
+                <li><a href="#" id="cerrar-sesion">Cerrar sesión</a></li>
+            </ul>
+        </div>
+
+        <!-- CONTENEDOR DE CONTENIDO -->
+        <div class="contenedor-contenido" id="contenedor-contenido">
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="contenido-cursos" id="contenido-principal">
+                <h1 class="titulo-cursos">Cursos Disponibles</h1>
+
+                <div class="filtros-cursos">
+                    <div class="filtro">
+                        <label class="etiqueta-filtro" for="buscar-curso">Buscar curso</label>
+                        <input type="text" id="buscar-curso" class="campo-filtro" placeholder="Buscar por título o descripción">
+                    </div>
+                    <div class="filtro">
+                        <label class="etiqueta-filtro" for="filtrar-instructor">Instructor</label>
+                        <select id="filtrar-instructor" class="campo-filtro">
+                            <option value="">Todos los instructores</option>
+                        </select>
+                    </div>
+                    <div class="filtro">
+                        <label class="etiqueta-filtro" for="filtrar-precio">Precio máximo</label>
+                        <input type="number" id="filtrar-precio" class="campo-filtro" placeholder="Precio máximo">
+                    </div>
+                </div>
+
+                <div class="lista-cursos" id="lista-cursos">
+                    <div class="mensaje-carga">Cargando cursos...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para alternar la barra lateral
+        function toggleBarraLateral() {
+            const barraLateral = document.getElementById('barra-lateral');
+            barraLateral.style.display = barraLateral.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Event listener para el botón de menú
+        document.getElementById('boton-menu').addEventListener('click', toggleBarraLateral);
+
+        // FUNCIÓN MEJORADA PARA VERIFICAR SESIÓN
+        function verificarSesion() {
+            const usuarioStr = sessionStorage.getItem('usuario');
+            console.log('Datos en sessionStorage:', usuarioStr);
+
+            if (usuarioStr) {
+                try {
+                    const usuario = JSON.parse(usuarioStr);
+                    console.log('Usuario parseado:', usuario);
+                    
+                    // Verificar que tenga las propiedades mínimas necesarias
+                    if (usuario && usuario.nombre && usuario.grupo) {
+                        // Sesión válida encontrada
+                        mostrarInterfazConSesion(usuario);
+                        cargarCursos(usuario);
+                        return true;
+                    } else {
+                        console.error('Usuario incompleto:', usuario);
+                        sessionStorage.removeItem('usuario');
+                    }
+                } catch (error) {
+                    console.error('Error parseando usuario:', error);
+                    sessionStorage.removeItem('usuario');
+                }
+            }
+            
+            // No hay sesión válida - mostrar interfaz normal sin restricciones
+            mostrarInterfazNoSesion();
+            cargarCursos(null); // Cargar cursos sin usuario
+            return false;
+        }
+
+        // MOSTRAR INTERFAZ CUANDO NO HAY SESIÓN
+        function mostrarInterfazNoSesion() {
+            document.getElementById('enlaces-sesion').style.display = 'flex';
+            document.getElementById('barra-lateral').style.display = 'none';
+            
+            // Siempre mostrar el contenido (sin restricciones)
+            document.getElementById('contenido-principal').style.display = 'block';
+            
+            // Quitar clase al contenedor de contenido cuando no hay barra lateral
+            const contenedorContenido = document.getElementById('contenedor-contenido');
+            contenedorContenido.classList.remove('con-barra-lateral');
+        }
+
+        // MOSTRAR INTERFAZ CUANDO HAY SESIÓN
+        function mostrarInterfazConSesion(usuario) {
+            document.getElementById('enlaces-sesion').style.display = 'none';
+            document.getElementById('barra-lateral').style.display = 'block';
+
+            // Mostrar información del usuario
+            document.getElementById('nombre-usuario').textContent = usuario.nombre;
+            document.getElementById('rol-usuario').textContent =
+                usuario.grupo.charAt(0).toUpperCase() + usuario.grupo.slice(1);
+
+            // Configurar opciones según el rol
+            configurarMenuSegunRol(usuario.grupo);
+            
+            // Agregar clase al contenedor de contenido para ajustar el margen cuando hay barra lateral
+            const contenedorContenido = document.getElementById('contenedor-contenido');
+            contenedorContenido.classList.add('con-barra-lateral');
+
+            // Modificar la barra superior para mostrar solo "Perfil"
+            const enlacesSesion = document.getElementById('enlaces-sesion');
+            enlacesSesion.innerHTML = '<a class="enlace-sesion" href="perfil.html">Perfil</a>';
+        }
+
+        // Configurar el menú según el rol del usuario
+        function configurarMenuSegunRol(rol) {
+            // Por defecto, todos los enlaces están habilitados
+            const enlaces = {
+                'postulaciones': false,
+                'cursos-usuario': false,
+                'trabajos': false,
+                'cursos': false
+            };
+
+            // Configurar según el rol
+            switch(rol) {
+                case 'candidato':
+                    // Los candidatos pueden ver todo excepto "Trabajos" (publicar ofertas)
+                    enlaces['trabajos'] = true;
+                    break;
+                case 'reclutador':
+                    // Los reclutadores pueden ver todo excepto "Tus cursos"
+                    enlaces['cursos-usuario'] = true;
+                    break;
+                case 'instructor':
+                    // Los instructores pueden ver todo excepto "Tus postulaciones"
+                    enlaces['postulaciones'] = true;
+                    break;
+            }
+
+            // Aplicar la configuración
+            for (const [enlace, deshabilitar] of Object.entries(enlaces)) {
+                const elemento = document.getElementById(`enlace-${enlace}`);
+                if (deshabilitar) {
+                    elemento.classList.add('disabled');
+                    elemento.setAttribute('href', '#');
+                }
+            }
+        }
+
+        // Función para cargar cursos desde la API
+        function cargarCursos(usuario) {
+            const listaCursos = document.getElementById('lista-cursos');
+            
+            // Mostrar mensaje de carga
+            listaCursos.innerHTML = '<div class="mensaje-carga">Cargando cursos...</div>';
+            
+            // Simulación de datos de cursos (en una aplicación real, esto vendría de una API)
+            const cursosSimulados = [
+                {
+                    id: 1,
+                    titulo: "Desarrollo Web con JavaScript",
+                    descripcion: "Aprende JavaScript desde cero hasta nivel avanzado. Domina el lenguaje más popular para desarrollo web.",
+                    instructor: "María González",
+                    duracion: "40 horas",
+                    precio: "$299",
+                    imagen: "javascript"
+                },
+                {
+                    id: 2,
+                    titulo: "Diseño UX/UI Fundamental",
+                    descripcion: "Domina los principios del diseño de experiencia de usuario e interfaz de usuario.",
+                    instructor: "Carlos López",
+                    duracion: "30 horas",
+                    precio: "$249",
+                    imagen: "uxui"
+                },
+                {
+                    id: 3,
+                    titulo: "Python para Ciencia de Datos",
+                    descripcion: "Aprende Python y sus librerías para análisis de datos y machine learning.",
+                    instructor: "Ana Martínez",
+                    duracion: "50 horas",
+                    precio: "$399",
+                    imagen: "python"
+                },
+                {
+                    id: 4,
+                    titulo: "Marketing Digital Avanzado",
+                    descripcion: "Estrategias avanzadas de marketing digital para empresas y emprendedores.",
+                    instructor: "Roberto Sánchez",
+                    duracion: "35 horas",
+                    precio: "$279",
+                    imagen: "marketing"
+                }
+            ];
+
+            // Simular carga asíncrona
+            setTimeout(() => {
+                // Limpiar lista de cursos
+                listaCursos.innerHTML = '';
+                
+                // Verificar si hay cursos
+                if (cursosSimulados.length === 0) {
+                    listaCursos.innerHTML = '<div class="mensaje-error">No hay cursos disponibles en este momento.</div>';
+                    return;
+                }
+                
+                // Llenar el filtro de instructores
+                const selectInstructor = document.getElementById('filtrar-instructor');
+                const instructores = [...new Set(cursosSimulados.map(curso => curso.instructor))];
+                
+                instructores.forEach(instructor => {
+                    const option = document.createElement('option');
+                    option.value = instructor;
+                    option.textContent = instructor;
+                    selectInstructor.appendChild(option);
+                });
+                
+                // Mostrar cursos
+                cursosSimulados.forEach(curso => {
+                    const cursoElemento = document.createElement('div');
+                    cursoElemento.className = 'curso';
+                    
+                    // Determinar la URL de la imagen
+                    const urlImagen = curso.imagen 
+                        ? `https://picsum.photos/seed/${curso.imagen}/600/400.jpg` 
+                        : 'https://picsum.photos/seed/curso/600/400.jpg';
+                    
+                    // Verificar si hay usuario para habilitar/deshabilitar botón
+                    const botonTexto = usuario ? "Inscribirse" : "Iniciar sesión para inscribirse";
+                    const botonDisabled = !usuario;
+                    
+                    cursoElemento.innerHTML = `
+                        <div class="imagen-curso" style="background-image: url('${urlImagen}')"></div>
+                        <div class="informacion-curso">
+                            <h3 class="titulo-curso">${curso.titulo}</h3>
+                            <p class="descripcion-curso">${curso.descripcion}</p>
+                            <div class="detalles-curso">
+                                <span class="instructor-curso">${curso.instructor}</span>
+                                <span>${curso.duracion}</span>
+                            </div>
+                            <div class="precio-curso">${curso.precio}</div>
+                            <button class="boton-inscribirse" data-id="${curso.id}" ${botonDisabled ? 'disabled' : ''}>
+                                ${botonTexto}
+                            </button>
+                        </div>
+                    `;
+                    
+                    listaCursos.appendChild(cursoElemento);
+                    
+                    // Configurar evento para el botón de inscribirse
+                    const botonInscribirse = cursoElemento.querySelector('.boton-inscribirse');
+                    botonInscribirse.addEventListener('click', function() {
+                        if (usuario) {
+                            inscribirseCurso(usuario, curso.id);
+                        } else {
+                            window.location.href = 'inicio_sesion.html';
+                        }
+                    });
+                });
+                
+                // Configurar filtros
+                configurarFiltros(cursosSimulados, usuario);
+            }, 1000); // Simular delay de carga
+        }
+
+        // Función para inscribirse a un curso
+        function inscribirseCurso(usuario, cursoId) {
+            // Simulación de inscripción
+            alert(`¡Te has inscrito al curso correctamente! (Usuario: ${usuario.nombre}, Curso ID: ${cursoId})`);
+            
+            // En una aplicación real, aquí iría la llamada a la API:
+            /*
+            fetch('/api/inscribir-curso', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    usuario_id: usuario.id,
+                    curso_id: cursoId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exito) {
+                    alert('¡Te has inscrito al curso correctamente!');
+                } else {
+                    alert(data.mensaje || 'Error al inscribirse en el curso');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al inscribirse en el curso. Por favor, intenta de nuevo más tarde.');
+            });
+            */
+        }
+
+        // Función para configurar los filtros
+        function configurarFiltros(cursos, usuario) {
+            const buscarCurso = document.getElementById('buscar-curso');
+            const filtrarInstructor = document.getElementById('filtrar-instructor');
+            const filtrarPrecio = document.getElementById('filtrar-precio');
+            const listaCursos = document.getElementById('lista-cursos');
+            
+            function aplicarFiltros() {
+                const textoBusqueda = buscarCurso.value.toLowerCase();
+                const instructorSeleccionado = filtrarInstructor.value;
+                const precioMaximo = parseFloat(filtrarPrecio.value) || Infinity;
+                
+                // Filtrar cursos
+                const cursosFiltrados = cursos.filter(curso => {
+                    const coincideTexto = curso.titulo.toLowerCase().includes(textoBusqueda) || 
+                                        curso.descripcion.toLowerCase().includes(textoBusqueda);
+                    const coincideInstructor = !instructorSeleccionado || curso.instructor === instructorSeleccionado;
+                    const precioCurso = parseFloat(curso.precio.replace('$', '')) || 0;
+                    const coincidePrecio = precioCurso <= precioMaximo;
+                    
+                    return coincideTexto && coincideInstructor && coincidePrecio;
+                });
+                
+                // Limpiar lista de cursos
+                listaCursos.innerHTML = '';
+                
+                // Verificar si hay cursos después de filtrar
+                if (cursosFiltrados.length === 0) {
+                    listaCursos.innerHTML = '<div class="mensaje-error">No se encontraron cursos que coincidan con los filtros.</div>';
+                    return;
+                }
+                
+                // Mostrar cursos filtrados
+                cursosFiltrados.forEach(curso => {
+                    const cursoElemento = document.createElement('div');
+                    cursoElemento.className = 'curso';
+                    
+                    // Determinar la URL de la imagen
+                    const urlImagen = curso.imagen 
+                        ? `https://picsum.photos/seed/${curso.imagen}/600/400.jpg` 
+                        : 'https://picsum.photos/seed/curso/600/400.jpg';
+                    
+                    // Verificar si hay usuario para habilitar/deshabilitar botón
+                    const botonTexto = usuario ? "Inscribirse" : "Iniciar sesión para inscribirse";
+                    const botonDisabled = !usuario;
+                    
+                    cursoElemento.innerHTML = `
+                        <div class="imagen-curso" style="background-image: url('${urlImagen}')"></div>
+                        <div class="informacion-curso">
+                            <h3 class="titulo-curso">${curso.titulo}</h3>
+                            <p class="descripcion-curso">${curso.descripcion}</p>
+                            <div class="detalles-curso">
+                                <span class="instructor-curso">${curso.instructor}</span>
+                                <span>${curso.duracion}</span>
+                            </div>
+                            <div class="precio-curso">${curso.precio}</div>
+                            <button class="boton-inscribirse" data-id="${curso.id}" ${botonDisabled ? 'disabled' : ''}>
+                                ${botonTexto}
+                            </button>
+                        </div>
+                    `;
+                    
+                    listaCursos.appendChild(cursoElemento);
+                    
+                    // Configurar evento para el botón de inscribirse
+                    const botonInscribirse = cursoElemento.querySelector('.boton-inscribirse');
+                    botonInscribirse.addEventListener('click', function() {
+                        if (usuario) {
+                            inscribirseCurso(usuario, curso.id);
+                        } else {
+                            window.location.href = 'inicio_sesion.html';
+                        }
+                    });
+                });
+            }
+            
+            // Configurar eventos para los filtros
+            buscarCurso.addEventListener('input', aplicarFiltros);
+            filtrarInstructor.addEventListener('change', aplicarFiltros);
+            filtrarPrecio.addEventListener('input', aplicarFiltros);
+        }
+
+        // FUNCIÓN MEJORADA PARA CERRAR SESIÓN
+        function cerrarSesion() {
+            // Limpiar todos los datos de sesión
+            sessionStorage.removeItem('usuario');
+
+            // Redirigir a index.html para forzar recarga completa
+            window.location.href = 'index.html';
+        }
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar sesión al cargar la página
+            verificarSesion();
+
+            // Configurar evento para cerrar sesión
+            document.getElementById('cerrar-sesion').addEventListener('click', function(e) {
+                e.preventDefault();
+                cerrarSesion();
+            });
+        });
+    </script>
+</body>
+</html>

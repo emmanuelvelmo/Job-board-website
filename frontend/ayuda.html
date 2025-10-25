@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto - Setsuzoku</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .barra-superior {
+            background-color: #2c3e50;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000;
+        }
+
+        .logo {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .enlaces-sesion {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .enlace-sesion {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .enlace-sesion:hover {
+            text-decoration: underline;
+        }
+
+        .contenedor-principal {
+            display: flex;
+            flex: 1;
+            margin-top: 60px; /* Altura de la barra superior */
+            position: relative;
+        }
+
+        .barra-lateral {
+            width: 250px;
+            background-color: #34495e;
+            color: white;
+            height: calc(100vh - 60px); /* Altura total menos la barra superior */
+            position: fixed;
+            top: 60px; /* Justo debajo de la barra superior */
+            left: 0;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .menu-usuario {
+            padding: 20px;
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        .nombre-usuario {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .rol-usuario {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .menu-opciones {
+            list-style: none;
+            padding: 0;
+        }
+
+        .menu-opciones li {
+            border-bottom: 1px solid #2c3e50;
+        }
+
+        .menu-opciones a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .menu-opciones a:hover {
+            background-color: #2c3e50;
+        }
+
+        .menu-opciones a.disabled {
+            color: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        .menu-opciones a.disabled:hover {
+            background-color: transparent;
+        }
+
+        .contenido-contacto {
+            flex: 1;
+            padding: 30px;
+            background-color: white;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-left: 20px; /* Espacio inicial sin barra lateral */
+        }
+
+        .titulo-contacto {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .seccion-contacto {
+            margin-bottom: 30px;
+        }
+
+        .subtitulo-contacto {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin-bottom: 15px;
+        }
+
+        .parrafo-contacto {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .formulario-contacto {
+            background-color: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .grupo-formulario {
+            margin-bottom: 20px;
+        }
+
+        .etiqueta-formulario {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .entrada-formulario {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .textarea-formulario {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .boton-formulario {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .boton-formulario:hover {
+            background-color: #2980b9;
+        }
+
+        .info-contacto {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .item-contacto {
+            flex: 1;
+            min-width: 250px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .titulo-item {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .icono-item {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .texto-item {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .mapa {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .boton-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        @media (max-width: 768px) {
+            .contenido-contacto {
+                margin-left: 20px;
+            }
+            
+            .barra-lateral {
+                width: 100%;
+                height: auto;
+                position: relative;
+                top: 0;
+            }
+            
+            .boton-menu {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- BARRA SUPERIOR -->
+    <nav class="barra-superior">
+        <a href="index.html" class="logo">Setsuzoku</a>
+        <div class="enlaces-sesion">
+            <a href="inicio_sesion.html" class="enlace-sesion" id="enlace-inicio-sesion">Iniciar sesión</a>
+            <a href="registro.html" class="enlace-sesion" id="enlace-registro">Registrarse</a>
+        </div>
+    </nav>
+
+    <div class="contenedor-principal">
+        <!-- BARRA LATERAL -->
+        <button class="boton-menu" id="boton-menu">☰ Menú</button>
+        
+        <div class="barra-lateral" id="barra-lateral">
+            <div class="menu-usuario">
+                <div class="nombre-usuario" id="nombre-usuario">Usuario</div>
+                <div class="rol-usuario" id="rol-usuario">Rol</div>
+            </div>
+
+            <ul class="menu-opciones">
+                <li><a href="perfil.html">Perfil</a></li>
+                <li><a href="index.html">Menú principal</a></li>
+                <li><a href="postulaciones.html" id="enlace-postulaciones">Tus postulaciones</a></li>
+                <li><a href="cursos_usuario.html" id="enlace-cursos-usuario">Tus cursos</a></li>
+                <li><a href="trabajos.html" id="enlace-trabajos">Trabajos</a></li>
+                <li><a href="cursos.html" id="enlace-cursos">Cursos</a></li>
+                <li><a href="#" id="cerrar-sesion">Cerrar sesión</a></li>
+            </ul>
+        </div>
+
+        <!-- CONTENIDO CONTACTO -->
+        <div class="contenido-contacto" id="contenido-principal">
+            <h1 class="titulo-contacto">Contacto</h1>
+
+            <div class="seccion-contacto">
+                <h2 class="subtitulo-contacto">¿Cómo podemos ayudarte?</h2>
+                <p class="parrafo-contacto">
+                    En Setsuzoku valoramos tu opinión y estamos aquí para ayudarte. Si tienes alguna pregunta, 
+                    sugerencia o necesitas asistencia con nuestra plataforma, no dudes en contactarnos a través 
+                    del siguiente formulario.
+                </p>
+            </div>
+
+            <div class="formulario-contacto">
+                <form id="form-contacto">
+                    <div class="grupo-formulario">
+                        <label for="nombre" class="etiqueta-formulario">Nombre completo</label>
+                        <input type="text" id="nombre" name="nombre" class="entrada-formulario" required>
+                    </div>
+                    
+                    <div class="grupo-formulario">
+                        <label for="correo" class="etiqueta-formulario">Correo electrónico</label>
+                        <input type="email" id="correo" name="correo" class="entrada-formulario" required>
+                    </div>
+                    
+                    <div class="grupo-formulario">
+                        <label for="asunto" class="etiqueta-formulario">Asunto</label>
+                        <input type="text" id="asunto" name="asunto" class="entrada-formulario" required>
+                    </div>
+                    
+                    <div class="grupo-formulario">
+                        <label for="mensaje" class="etiqueta-formulario">Mensaje</label>
+                        <textarea id="mensaje" name="mensaje" class="textarea-formulario" required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="boton-formulario">Enviar mensaje</button>
+                </form>
+            </div>
+
+            <div class="seccion-contacto">
+                <h2 class="subtitulo-contacto">Información de contacto</h2>
+                
+                <div class="info-contacto">
+                    <div class="item-contacto">
+                        <h3 class="titulo-item">
+                            <span class="icono-item">📧</span>
+                            Correo electrónico
+                        </h3>
+                        <p class="texto-item">
+                            contacto@setsuzoku.com<br>
+                            soporte@setsuzoku.com
+                        </p>
+                    </div>
+                    
+                    <div class="item-contacto">
+                        <h3 class="titulo-item">
+                            <span class="icono-item">📱</span>
+                            Teléfono
+                        </h3>
+                        <p class="texto-item">
+                            +1 (555) 123-4567<br>
+                            Lunes a Viernes, 9:00 AM - 6:00 PM
+                        </p>
+                    </div>
+                    
+                    <div class="item-contacto">
+                        <h3 class="titulo-item">
+                            <span class="icono-item">🏢</span>
+                            Oficina principal
+                        </h3>
+                        <p class="texto-item">
+                            Av. Principal 123, Ciudad<br>
+                            Edificio Setsuzoku, Piso 10
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="seccion-contacto">
+                <h2 class="subtitulo-contacto">Ubicación</h2>
+                <div class="mapa">
+                    <!-- Aquí iría un mapa real, por ejemplo de Google Maps -->
+                    <img src="https://picsum.photos/seed/mapa-ubicacion/1200/400.jpg" alt="Mapa de ubicación" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Función para alternar la barra lateral
+        function toggleBarraLateral() {
+            const barraLateral = document.getElementById('barra-lateral');
+            barraLateral.style.display = barraLateral.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Event listener para el botón de menú
+        document.getElementById('boton-menu').addEventListener('click', toggleBarraLateral);
+
+        // Verificar si hay una sesión activa
+        function verificarSesion() {
+            const usuarioActual = localStorage.getItem('usuarioActual');
+            
+            if (usuarioActual) {
+                try {
+                    const usuario = JSON.parse(usuarioActual);
+                    
+                    // Actualizar la barra superior
+                    document.getElementById('enlace-inicio-sesion').style.display = 'none';
+                    document.getElementById('enlace-registro').style.display = 'none';
+                    
+                    // Mostrar la barra lateral
+                    const barraLateral = document.getElementById('barra-lateral');
+                    barraLateral.style.display = 'block';
+                    
+                    // Actualizar información del usuario en la barra lateral
+                    document.getElementById('nombre-usuario').textContent = 
+                        `${usuario.nombre} ${usuario.apellido_paterno}`;
+                    document.getElementById('rol-usuario').textContent = 
+                        usuario.grupo === 'candidato' ? 'Candidato' : 'Reclutador';
+                    
+                    // Ajustar el margen del contenido para dejar espacio a la barra lateral
+                    document.getElementById('contenido-principal').style.marginLeft = '270px';
+                    
+                    // Configurar enlaces según el tipo de usuario
+                    if (usuario.grupo === 'candidato') {
+                        document.getElementById('enlace-postulaciones').classList.remove('disabled');
+                        document.getElementById('enlace-cursos-usuario').classList.remove('disabled');
+                        document.getElementById('enlace-trabajos').classList.remove('disabled');
+                        document.getElementById('enlace-cursos').classList.remove('disabled');
+                    } else {
+                        document.getElementById('enlace-postulaciones').classList.add('disabled');
+                        document.getElementById('enlace-cursos-usuario').classList.add('disabled');
+                        document.getElementById('enlace-trabajos').classList.remove('disabled');
+                        document.getElementById('enlace-cursos').classList.remove('disabled');
+                    }
+                    
+                    // Configurar el evento para cerrar sesión
+                    document.getElementById('cerrar-sesion').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        localStorage.removeItem('usuarioActual');
+                        window.location.reload();
+                    });
+                    
+                } catch (error) {
+                    console.error('Error al procesar la información del usuario:', error);
+                }
+            } else {
+                // Si no hay sesión, asegurarse de que la barra lateral esté oculta
+                document.getElementById('barra-lateral').style.display = 'none';
+                
+                // Asegurar que los enlaces de inicio de sesión y registro estén visibles
+                document.getElementById('enlace-inicio-sesion').style.display = 'block';
+                document.getElementById('enlace-registro').style.display = 'block';
+                
+                // Ajustar el margen del contenido para que no haya espacio para la barra lateral
+                document.getElementById('contenido-principal').style.marginLeft = '20px';
+            }
+            
+            // Configurar el formulario de contacto (independientemente de si hay sesión o no)
+            document.getElementById('form-contacto').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Obtener datos del formulario
+                const formData = new FormData(this);
+                const datos = {
+                    nombre: formData.get('nombre'),
+                    correo: formData.get('correo'),
+                    asunto: formData.get('asunto'),
+                    mensaje: formData.get('mensaje')
+                };
+                
+                // Aquí iría el código para enviar el formulario al servidor
+                console.log('Datos del formulario de contacto:', datos);
+                
+                // Mostrar mensaje de éxito
+                alert('Tu mensaje ha sido enviado correctamente. Te responderemos lo antes posible.');
+                
+                // Reiniciar el formulario
+                this.reset();
+            });
+        }
+        
+        // Verificar la sesión al cargar la página
+        document.addEventListener('DOMContentLoaded', verificarSesion);
+    </script>
+</body>
+</html>
